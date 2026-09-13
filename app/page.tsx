@@ -22,8 +22,6 @@ export const dynamic = "force-dynamic";
 
 /** The name we recorded fixtures for, so fixture mode and live mode open on the same desk. */
 const DEFAULT_SYMBOL = "AAPL";
-/** Chips shown in the task bar. The full universe is still resolvable by typing a brief. */
-const MAX_CHIPS = 18;
 
 export default async function Page() {
   const mode = resolveMode();
@@ -50,9 +48,8 @@ export default async function Page() {
         <div>
           <h1>Nightjar</h1>
           <p className="sub">
-            A 7&times;24 research desk for Bitget tokenized US equities. It keeps watch through the hours when the
-            market that actually prices them is closed &mdash; measuring how far the rToken drifts from the composite
-            reference index its perpetual settles against, and saying what that means for a holder.
+            A 7&times;24 research desk for Bitget tokenized US equities &mdash; measuring how far the rToken drifts
+            from the composite reference index its perpetual settles against, and saying what that means for a holder.
           </p>
         </div>
         <p className="thesis">
@@ -70,7 +67,7 @@ export default async function Page() {
       ) : null}
 
       <Workbench
-        pairs={pairs.slice(0, MAX_CHIPS)}
+        pairs={pairs}
         mode={mode}
         aiConfigured={qwen !== null}
         budgetMs={resolveResearchBudgetMs()}

@@ -13,7 +13,7 @@
  * the model is still reasoning. The memo arrives last and is labelled with who wrote it.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { RuntimeMode } from "@/lib/config";
 import type { ResearchMemo } from "@/lib/llm/memo";
@@ -69,6 +69,12 @@ const PRESETS: { label: string; text: string }[] = [
   },
 ];
 
+/**
+ * Chips rendered at once. The filter reaches the whole universe, so the wall does not
+ * have to: 207 tickers as buttons is a scroll of noise, and it buried the brief box.
+ */
+const MAX_VISIBLE_CHIPS = 28;
+
 function briefFor(symbol: string): string {
   return (
     "Investigate " +
@@ -119,8 +125,8 @@ function Headline({ pack }: { pack: ClientPack | null }) {
     return (
       <section className="panel headline">
         <p className="empty-state">
-          Waiting for the first evidence pack. As soon as the desk has matched rToken candles against the reference
-          index by timestamp, the basis, the chart and every panel below populate - before the model has said anything.
+          Numbers before narrative: the basis, the chart and every panel below populate from the evidence pack as
+          soon as it lands, before the model has said anything.
         </p>
       </section>
     );
@@ -301,6 +307,7 @@ export function Workbench({ pairs, mode, aiConfigured, budgetMs, defaultSymbol, 
   const [stats, setStats] = useState<LoopStats | null>(null);
   const [failure, setFailure] = useState<Failure | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
+  const [filter, setFilter] = useState("");
 
   const abortRef = useRef<AbortController | null>(null);
   const startedRef = useRef<number>(0);
@@ -418,6 +425,14 @@ export function Workbench({ pairs, mode, aiConfigured, budgetMs, defaultSymbol, 
     setPhase("idle");
   };
 
+  const selectedPair = pairs.find((pair) => pair.base === symbol) ?? null;
+  const query = filter.trim().toUpperCase();
+  const matches = useMemo(
+    () => (query ? pairs.filter((pair) => pair.base.toUpperCase().includes(query)) : pairs),
+    [pairs, query],
+  );
+  const visible = matches.slice(0, MAX_VISIBLE_CHIPS);
+
   const pick = (base: string): void => {
     setSymbol(base);
     setQuestion(briefFor(base));
@@ -429,37 +444,65 @@ export function Workbench({ pairs, mode, aiConfigured, budgetMs, defaultSymbol, 
       <div className={"modebar " + mode}>
         {mode === "fixture" ? (
           <span>
-            <strong>FIXTURE MODE</strong> - recorded snapshot, <strong>NOT live data</strong>
-            {fixtureRecordedAt ? ", recorded " + fixtureRecordedAt : ""}. Set <code>NIGHTJAR_MODE=live</code> for
-            real-time quotes.
+            <strong>FIXTURE</strong> &mdash; recorded snapshot, <strong>not live data</strong>
+            {fixtureRecordedAt ? ", recorded " + fixtureRecordedAt : ""}
           </span>
         ) : (
           <span>
-            <strong>LIVE</strong> - keyless Bitget public market data. Every figure carries its own upstream timestamp.
+            <strong>LIVE</strong> &mdash; keyless Bitget public data; every figure carries its own upstream timestamp
           </span>
         )}
         <span className="modebar-right">
           <span className={"chip " + (aiConfigured ? "ok" : "warn")}>
             {aiConfigured ? "Qwen configured" : "Qwen key absent - computed memos only"}
           </span>
-          <span className="chip ok">read-only - cannot trade</span>
-          <span className="chip">budget {duration(budgetMs)}</span>
-          {counts ? (
-            <span className="chip">
-              {counts.dualListed} dual-listed / {counts.perpOnly} perp-only
-            </span>
-          ) : null}
+          <span className="chip ok">read-only &middot; cannot trade</span>
+          <span className="chip">{duration(budgetMs)} budget</span>
         </span>
       </div>
 
       <section className="panel task">
         <header className="panel-head">
           <h3>Task the desk</h3>
-          <span className="caption">a research brief, not a conversation - one run produces one memo</span>
+          <span className="caption">
+            {selectedPair
+              ? symbol + " \u00b7 " + selectedPair.rTokenSymbol + " spot vs " + selectedPair.perpSymbol + " index"
+              : "one research brief produces one memo"}
+          </span>
         </header>
 
+        <div className="symbol-picker">
+          <input
+            className="symbol-filter"
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+            placeholder={"Filter " + pairs.length + " tickers"}
+            aria-label="Filter the tradable universe"
+            spellCheck={false}
+            maxLength={12}
+          />
+          <span className="symbol-count">
+            {query
+              ? matches.length + " of " + pairs.length + " match"
+              : counts
+                ? counts.dualListed + " dual-listed / " + counts.perpOnly + " perp-only"
+                : pairs.length + " names"}
+            {matches.length > visible.length ? " \u00b7 showing first " + visible.length : ""}
+          </span>
+        </div>
+
         <div className="symbols">
-          {pairs.map((pair) => (
+          {selectedPair && !matches.some((pair) => pair.base === selectedPair.base) ? (
+            <button
+              type="button"
+              className="sym on"
+              onClick={() => pick(selectedPair.base)}
+              title="Current selection, kept visible while filtering"
+            >
+              {selectedPair.base}
+            </button>
+          ) : null}
+          {visible.map((pair) => (
             <button
               key={pair.base}
               type="button"
@@ -470,6 +513,11 @@ export function Workbench({ pairs, mode, aiConfigured, budgetMs, defaultSymbol, 
               {pair.base}
             </button>
           ))}
+          {pairs.length > 0 && matches.length === 0 ? (
+            <span className="empty-state">
+              Nothing matches &ldquo;{filter.trim()}&rdquo;. The desk still investigates any symbol Bitget lists.
+            </span>
+          ) : null}
           {pairs.length === 0 ? <span className="empty-state">The tradable universe did not load.</span> : null}
         </div>
 

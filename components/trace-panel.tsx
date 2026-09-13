@@ -88,7 +88,7 @@ export function TracePanel({ entries, running, stats, elapsedMs, budgetMs }: Pro
       <div className="trace-scroll" ref={scrollRef}>
         {groups.length === 0 ? (
           <p className="trace-empty">
-            Nothing yet. Running a task streams the model&apos;s reasoning and every tool call here as it happens.
+            Nothing yet. A run streams every tool call here with its arguments, latency and response size.
           </p>
         ) : null}
         {groups.map((groupEntries, index) => {
