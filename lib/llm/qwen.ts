@@ -35,6 +35,26 @@ export interface QwenConfig {
   model: string;
   apiKey: string;
   maxOutputTokens: number;
+  /**
+   * Whether to run the model in thinking mode. MEASURED on the gateway with an identical
+   * emit_memo tool call:
+   *
+   *   enable_thinking:false ->  3.9s,  134 output tokens,   0 reasoning tokens
+   *   enable_thinking:true  -> 34.5s, 1195 output tokens, 438 reasoning tokens
+   *
+   * Nearly 9x. And the reasoning buys nothing here: every number in the memo is computed by
+   * deterministic code and handed to the model pre-validated, so there is no arithmetic left
+   * for it to reason its way to. A live Vercel run with thinking ON burned the entire 55s
+   * budget on ~2000 reasoning tokens re-verifying those numbers and was killed one sentence
+   * before it emitted the memo.
+   *
+   * `reasoning.effort` is NOT a substitute: it is accepted but measured to change nothing
+   * (11 vs 11 vs 17 reasoning tokens for low / minimal / absent). `enable_thinking` is the
+   * only knob that works. Env: QWEN_ENABLE_THINKING.
+   */
+  thinking: boolean;
+  /** Sent as `reasoning.effort` only when thinking is on. Empty omits the field. */
+  reasoningEffort: string;
 }
 
 /** Returns null when no key is configured - the caller must fall back, not crash. */
@@ -46,7 +66,27 @@ export function resolveQwenConfig(env: NodeJS.ProcessEnv = process.env): QwenCon
     model: env.QWEN_MODEL?.trim() || DEFAULT_QWEN_MODEL,
     apiKey,
     maxOutputTokens: Number(env.QWEN_MAX_OUTPUT_TOKENS) || DEFAULT_MAX_OUTPUT_TOKENS,
+    thinking: resolveEnableThinking(env.QWEN_ENABLE_THINKING),
+    reasoningEffort: resolveReasoningEffort(env.QWEN_REASONING_EFFORT) || DEFAULT_REASONING_EFFORT,
   };
+}
+
+/** "off" and "" both mean: do not send the field at all. */
+export function resolveReasoningEffort(raw: string | undefined): string {
+  const value = (raw ?? "").trim().toLowerCase();
+  if (value === "" || value === "off" || value === "none") return "";
+  return value;
+}
+
+export const DEFAULT_REASONING_EFFORT = "low";
+
+/** Off by default, for the measured 9x latency difference documented on QwenConfig.thinking. */
+export const DEFAULT_ENABLE_THINKING = false;
+
+export function resolveEnableThinking(raw: string | undefined): boolean {
+  const value = (raw ?? "").trim().toLowerCase();
+  if (value === "") return DEFAULT_ENABLE_THINKING;
+  return value === "true" || value === "1" || value === "on" || value === "yes";
 }
 
 /** The flat tool schema the gateway actually accepts. */
@@ -168,6 +208,8 @@ function body(config: QwenConfig, options: CreateResponseOptions, stream: boolea
     stream,
     max_output_tokens: options.maxOutputTokens ?? config.maxOutputTokens,
   };
+  payload.enable_thinking = config.thinking;
+  if (config.thinking && config.reasoningEffort) payload.reasoning = { effort: config.reasoningEffort };
   if (options.tools && options.tools.length > 0) {
     payload.tools = options.tools;
     // NEVER "required" or an object: the gateway 400s in thinking mode. Probed, not assumed.

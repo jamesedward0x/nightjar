@@ -125,6 +125,8 @@ const ALLOWED_ENV = [
   // stays a true inventory of what this app reads.
   "FUNCTION_MAX_DURATION_S",
   "QWEN_MAX_OUTPUT_TOKENS",
+  "QWEN_REASONING_EFFORT",
+  "QWEN_ENABLE_THINKING",
 ];
 
 describe("the SDK config Nightjar actually runs with", () => {

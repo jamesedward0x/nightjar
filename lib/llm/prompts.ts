@@ -77,6 +77,10 @@ export function buildInstructions(ctx: PromptContext): string {
     "   and conflating them is the most common error in this domain.",
     "10. Your output is research, not advice. Frame the decision checklist as arguments for and against, never as an",
     "    instruction to act.",
+    "11. DO NOT VERIFY THE ARITHMETIC. Every datum you are given was produced by deterministic, tested code from a",
+    "    validated upstream payload. Re-deriving, re-checking, recomputing or narrating your verification of a number -",
+    "    in your reasoning OR in the memo - is wasted budget and the single most common way this task fails. Read each",
+    "    datum once, trust it, and spend your thinking on judgement: what is unusual, what it means, what to flag.",
     "",
     "BUDGET: at most " + ctx.maxToolCalls + " tool calls and about " + Math.round(ctx.timeoutMs / 1000) + " seconds in TOTAL.",
     "One round trip costs 10-25 seconds, so turns are the scarce resource, not tool calls. BATCH: if you need more",
@@ -90,6 +94,8 @@ export function buildInstructions(ctx: PromptContext): string {
     "",
     "STYLE: plain, direct English. Explain funding, basis, index composition and slippage so a smart non-quant",
     "follows. No filler, no hedging boilerplate, no restating the question. Be specific and quantitative.",
+    "LENGTH IS A HARD CONSTRAINT: every memo section is 2-3 sentences, at most about 45 words. There is a fixed token",
+    "budget and running out of it loses the memo entirely, so dense and specific always beats thorough and long.",
     fixtureClause,
   ].join("\n");
 }
