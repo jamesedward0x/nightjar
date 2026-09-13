@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Liquidity, priced the way a desk would price an exit.
  *
  * DECISION.md 2.6 F6 is the reason this file exists in this shape: rToken SPOT candle

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Analogue retrieval - "has this happened before, and what followed?"
  *
  * The sample is bounded by the 1000-row 1H ceiling (about 41 days), and that bound is

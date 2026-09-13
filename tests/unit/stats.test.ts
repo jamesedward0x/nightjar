@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Statistics. The percentile definition matters because "is this normal?" is a
  * judge-facing claim: we use linear interpolation between closest ranks (type 7,
  * the R/NumPy/Excel PERCENTILE.INC definition) so our numbers match a spreadsheet.
@@ -72,7 +72,12 @@ describe("percentileRankOfAbs", () => {
   });
 
   it("ignores sign, because a discount and a premium of equal size are equally unusual", () => {
-    expect(percentileRankOfAbs([0.1, -0.2, 0.3], -0.3)).toBeCloseTo(percentileRankOfAbs([0.1, -0.2, 0.3], 0.3), 10);
+    const sample = [0.1, -0.2, 0.3];
+    const negative = percentileRankOfAbs(sample, -0.3);
+    const positive = percentileRankOfAbs(sample, 0.3);
+    expect(negative).not.toBeNull();
+    expect(positive).not.toBeNull();
+    expect(negative).toBe(positive);
   });
 
   it("handles ties at the midpoint so an exact duplicate is not the 100th percentile", () => {

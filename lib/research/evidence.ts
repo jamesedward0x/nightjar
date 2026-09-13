@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Evidence pack assembly.
  *
  * This is the seam between the data layer (lib/bitget) and the compute engine

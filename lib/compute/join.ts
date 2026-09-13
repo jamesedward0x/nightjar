@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TIMESTAMP-KEYED joins only. DECISION.md 2.6 F7.
  *
  * Of 1,000 recorded rToken spot hourly rows, 70 had no matching index timestamp -

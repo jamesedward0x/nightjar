@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Session classification in America/New_York. DECISION.md 2.6 F8.
  *
  * RTH is 09:30-16:00 ET, which is 13:30-20:00 UTC under EDT and 14:30-21:00 UTC

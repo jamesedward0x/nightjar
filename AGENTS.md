@@ -68,6 +68,12 @@ Fast loop is `typecheck` + `test`. Do not run `build` after every change.
   output** (Phases 2-4), not more data-layer hardening.
 - If a live endpoint disagrees with a fixture, the fixture is stale: re-record it, never edit numbers.
 - Update the phase table in `README.md` when a phase completes.
+- **Never create files with `Set-Content -Encoding utf8`.** Windows PowerShell 5.1 prepends a UTF-8
+  BOM. TypeScript and vitest tolerate it, so everything passes locally - but `pnpm/action-setup` does a
+  raw `JSON.parse` of `package.json` and CI dies in 6 seconds with
+  `SyntaxError: Unexpected token '<U+FEFF>'`. Write with
+  `[IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding($false)))`, and after any
+  bulk file write scan for `EF BB BF` before committing. (This broke CI once, on 2026-09-13.)
 
 ## Phase state (target submit 20 Sep 2026)
 

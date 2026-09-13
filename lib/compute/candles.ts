@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Wire -> Candle decoding.
  *
  * Bitget v3 candle rows are 7-element STRING tuples:

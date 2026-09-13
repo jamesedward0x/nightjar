@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Session classification, with the DST transition as the headline case.
  * DECISION.md 2.6 F8: RTH is 13:30-20:00 UTC under EDT and 14:30-21:00 UTC under EST.
  * A hardcoded UTC offset would pass every summer test and silently misclassify every

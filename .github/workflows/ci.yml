@@ -1,4 +1,4 @@
-﻿name: CI
+name: CI
 
 on:
   push:
@@ -13,9 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # No version input: pnpm/action-setup reads "packageManager" from package.json.
-      # Specifying both makes the action fail with "Multiple versions of pnpm specified".
+      # Pinned here rather than via package.json's "packageManager": that field makes
+      # pnpm re-fetch itself from the registry before every command, which breaks
+      # offline development. Keep this in sync with the pnpm used locally.
       - uses: pnpm/action-setup@v4
+        with:
+          version: 12
 
       - uses: actions/setup-node@v4
         with:

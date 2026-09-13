@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The sign convention is the single most important contract in the compute engine:
  * positive = rToken ABOVE the reference index. DECISION.md 2.6 F3 found the sign is
  * itself informative (liquid RTH prints a discount, weekend dislocations are premiums),

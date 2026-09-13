@@ -1,9 +1,8 @@
-﻿{
+{
   "name": "nightjar-web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@12.4.1",
   "description": "Nightjar - a 7x24 tokenized US equity research desk. Track 3 / Personalized Research Workbench, Bitget AI Hackathon S2.",
   "scripts": {
     "dev": "next dev",

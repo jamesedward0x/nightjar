@@ -1,4 +1,4 @@
-﻿/**
+/**
  * F7: joins must be timestamp-keyed. An earlier positional join paired unrelated
  * hours and produced a false "rToken stuck while the index ran" narrative. The second
  * test below reproduces that class of error on purpose and asserts it disagrees with

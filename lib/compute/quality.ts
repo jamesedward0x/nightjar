@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Data-quality detection. DECISION.md 2.6 F6.
  *
  * The rToken spot candle volume column is broken, and we proved it three ways:

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Shared vocabulary for the deterministic compute engine.
  *
  * Everything in lib/compute is PURE: it takes already-fetched, already-validated

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Basis - the distance between a tokenized equity and the reference price its own
  * perpetual settles against.
  *

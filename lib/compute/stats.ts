@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Distribution statistics. Pure, dependency-free, and deliberately boring:
  * a percentile implemented three different ways is three chances to publish a
  * wrong "is this normal?" answer.
