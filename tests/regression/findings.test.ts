@@ -208,15 +208,16 @@ describe("the published findings, reproduced from the recorded corpus", () => {
         expect(sourceStatus(id), id + " answered from a recording").toBe("ok");
       }
       // Degradation is a documented rule, not a mood: the flag is exactly "some source
-      // was not ok". Right now candles-spot-1d misses, because evidence.ts asks for
-      // interval=1D&limit=30 while the recorder saved limit=1000 and matching is exact
-      // (invariant 5). That source is optional and feeds only the candle-volume
-      // cross-check, so no number below depends on it - but the pack must still admit it.
+      // was not ok". The 1D spot leg used to miss permanently here, because evidence.ts
+      // asked for interval=1D&limit=30 while the recorder saved limit=1000 and matching
+      // is exact (invariant 5). The request now matches the recording, so every source
+      // the findings need answers and the pack is not degraded.
       expect(
         pack.degraded,
         "degraded is true exactly when some source is not ok",
       ).toBe(pack.sources.some((record) => record.status !== "ok"));
-      expect(sourceStatus("candles-spot-1d"), "the 1D spot leg is a known exact-match miss").toBe("degraded");
+      expect(pack.degraded, "no source misses once the 1D limit matches the recording").toBe(false);
+      expect(sourceStatus("candles-spot-1d"), "the 1D spot leg answers from its recording").toBe("ok");
     });
   });
 

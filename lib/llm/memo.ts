@@ -23,6 +23,7 @@ import { z } from "zod";
 import { BASIS_SIGN_CONVENTION } from "@/lib/compute/basis";
 import { round } from "@/lib/compute/stats";
 import type { EvidencePack } from "@/lib/research/evidence";
+import { clip } from "@/lib/research/format";
 import {
   DECISION_OPTIONS,
   FALLBACK_BANNER,
@@ -149,6 +150,18 @@ export function isoTs(ts: number | null | undefined): string {
  * Build the memo with no LLM at all. This is the fallback path, the fixture-mode
  * path, and the proof that the research engine - not Qwen - is the product.
  */
+/**
+ * Flag codes with their multiplicity, e.g. `series_stale (x3)`. memoSchema caps the
+ * data_quality field at 700 characters and the standing disclosure already uses ~300
+ * of them, so a defect that fires once per row has to collapse to one entry here no
+ * matter how many rows it touched.
+ */
+function flagSummary(flags: { code: string }[]): string {
+  const counts = new Map<string, number>();
+  for (const flag of flags) counts.set(flag.code, (counts.get(flag.code) ?? 0) + 1);
+  return [...counts.entries()].map(([code, n]) => (n > 1 ? `${code} (x${n})` : code)).join(", ");
+}
+
 export function buildFallbackMemo(pack: EvidencePack, reason?: string): ResearchMemo {
   const snap = pack.snapshot;
   const basis = snap ? snap.basisPct : null;
@@ -292,12 +305,19 @@ export function buildFallbackMemo(pack: EvidencePack, reason?: string): Research
     derivatives_context: derivativesText,
     analogues: analogueText,
     risk_flags: flags,
-    data_quality:
+    // Bounded by construction rather than by luck: the disclosure is ~300 of the
+    // 700 characters memoSchema allows, so the flag list is deduplicated with counts
+    // and the whole field is clipped. A per-row defect can never overflow it again.
+    data_quality: clip(
       pack.quality.disclosure +
-      (pack.quality.flags.length > 0
-        ? " Flags raised this run: " + pack.quality.flags.map((f) => f.code).join(", ") + "."
-        : " No inconsistency was detected in this run, but the field remains untrusted by policy.") +
-      (degradedSources.length > 0 ? " Sources unavailable or degraded: " + degradedSources.join(", ") + "." : " All sources answered."),
+        (pack.quality.flags.length > 0
+          ? " Flags raised this run: " + flagSummary(pack.quality.flags) + "."
+          : " No inconsistency was detected in this run, but the field remains untrusted by policy.") +
+        (degradedSources.length > 0
+          ? " Sources unavailable or degraded: " + degradedSources.join(", ") + "."
+          : " All sources answered."),
+      700,
+    ),
     decision_checklist: checklist,
     what_would_change_this_view: [
       `The basis returning inside ${pct(0.1)} during regular trading hours would mean the dislocation was transient rather than structural.`,

@@ -71,51 +71,80 @@ export function detectVolumeInconsistency(input: VolumeConsistencyInput): Qualit
   const tolerance = input.intervalTolerance ?? 10;
   const tickerTolerance = input.tickerTolerance ?? 100;
   const flags: QualityFlag[] = [];
+  /** How far a ratio sits from 1, so a 0.01x defect and a 100x defect rank together. */
+  const spread = (ratio: number): number => (ratio >= 1 ? ratio : 1 / ratio);
 
+  // ONE flag per defect, not one per row. A 90-day window emitted 72 identical
+  // flags, which overflowed every downstream consumer at once: the memo's
+  // data_quality field (700-char cap), the risk panel and the tool projection the
+  // model reads. The per-row arithmetic is not lost - `evidence` keeps the count,
+  // the number of rows compared and the single worst offender, so a judge can still
+  // check the arithmetic and the message names the day it happened.
+  const intervalOffenders: { ts: number; base: number; hourlySum: number; hours: number; ratio: number }[] = [];
+  let intervalCompared = 0;
   for (const day of input.daily) {
     const hourlySum = hourlyBaseVolumeForDay(input.hourly, day.ts);
     if (hourlySum.total === null || hourlySum.total <= 0 || day.baseVolume === null || day.baseVolume <= 0) continue;
+    intervalCompared += 1;
     const ratio = day.baseVolume / hourlySum.total;
     if (ratio > tolerance || ratio < 1 / tolerance) {
-      flags.push({
-        code: "candle_volume_interval_inconsistent",
-        severity: "critical",
-        field: "candles.baseVolume(1D vs sum of 1H)",
-        message:
-          `1D base volume for ${new Date(day.ts).toISOString().slice(0, 10)} is ${round(ratio, 2)}x the sum of its own ` +
-          `${hourlySum.hours} hourly rows. The two intervals cannot both be right; neither is used for liquidity here.`,
-        evidence: {
-          dayTs: day.ts,
-          daily1dBaseVolume: day.baseVolume,
-          hourlySumBaseVolume: round(hourlySum.total, 6),
-          hourlyRows: hourlySum.hours,
-          ratio: round(ratio, 4),
-        },
-      });
+      intervalOffenders.push({ ts: day.ts, base: day.baseVolume, hourlySum: hourlySum.total, hours: hourlySum.hours, ratio });
     }
+  }
+  if (intervalOffenders.length > 0) {
+    const worst = intervalOffenders.reduce((a, b) => (spread(b.ratio) > spread(a.ratio) ? b : a));
+    flags.push({
+      code: "candle_volume_interval_inconsistent",
+      severity: "critical",
+      field: "candles.baseVolume(1D vs sum of 1H)",
+      message:
+        `${intervalOffenders.length} of ${intervalCompared} compared daily rows disagree with the sum of their own hourly rows; ` +
+        `the worst is ${new Date(worst.ts).toISOString().slice(0, 10)} at ${round(spread(worst.ratio), 2)}x. ` +
+        `The two intervals cannot both be right, so neither is used for liquidity here.`,
+      evidence: {
+        daysAffected: intervalOffenders.length,
+        daysCompared: intervalCompared,
+        worstDay: new Date(worst.ts).toISOString().slice(0, 10),
+        worstDayTs: worst.ts,
+        worstDaily1dBaseVolume: round(worst.base, 6),
+        worstHourlySumBaseVolume: round(worst.hourlySum, 6),
+        worstHourlyRows: worst.hours,
+        worstRatio: round(worst.ratio, 4),
+      },
+    });
   }
 
   const turnover = input.turnover24h ?? null;
   if (turnover !== null && turnover > 0) {
+    const tickerOffenders: { ts: number; quote: number; ratio: number }[] = [];
+    let tickerCompared = 0;
     for (const day of input.daily) {
-      if (day.quoteVolume === null || day.quoteVolume <= 0) continue;
-      const ratio = day.quoteVolume / turnover;
-      if (ratio > tickerTolerance) {
-        flags.push({
-          code: "candle_volume_implausible_vs_ticker",
-          severity: "critical",
-          field: "candles.quoteVolume(1D) vs tickers.turnover24h",
-          message:
-            `1D quote volume for ${new Date(day.ts).toISOString().slice(0, 10)} is ${round(ratio, 0)}x the reported 24h ` +
-            `turnover for the same instrument. One of them is wrong by orders of magnitude, so neither is quoted.`,
-          evidence: {
-            dayTs: day.ts,
-            daily1dQuoteVolume: round(day.quoteVolume, 2),
-            turnover24h: round(turnover, 2),
-            ratio: round(ratio, 2),
-          },
-        });
-      }
+      const quote = day.quoteVolume;
+      if (quote === null || quote <= 0) continue;
+      tickerCompared += 1;
+      const ratio = quote / turnover;
+      if (ratio > tickerTolerance) tickerOffenders.push({ ts: day.ts, quote, ratio });
+    }
+    if (tickerOffenders.length > 0) {
+      const worst = tickerOffenders.reduce((a, b) => (b.ratio > a.ratio ? b : a));
+      flags.push({
+        code: "candle_volume_implausible_vs_ticker",
+        severity: "critical",
+        field: "candles.quoteVolume(1D) vs tickers.turnover24h",
+        message:
+          `${tickerOffenders.length} of ${tickerCompared} compared daily rows report a 1D quote volume above ${tickerTolerance}x the ` +
+          `reported 24h turnover; the worst is ${new Date(worst.ts).toISOString().slice(0, 10)} at ${round(worst.ratio, 0)}x. ` +
+          `One of them is wrong by orders of magnitude, so neither is quoted.`,
+        evidence: {
+          daysAffected: tickerOffenders.length,
+          daysCompared: tickerCompared,
+          worstDay: new Date(worst.ts).toISOString().slice(0, 10),
+          worstDayTs: worst.ts,
+          worstDaily1dQuoteVolume: round(worst.quote, 2),
+          turnover24h: round(turnover, 2),
+          worstRatio: round(worst.ratio, 2),
+        },
+      });
     }
   }
 

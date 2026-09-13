@@ -189,7 +189,11 @@ function derivatives(fundingRows: { fundingRate?: string | null; fundingRateInte
   if (!row && !oi) return null;
   return {
     fundingRatePct: fundingRate === null ? null : fundingRate * 100,
-    fundingIntervalHours: intervalHoursRaw === null ? null : intervalHoursRaw / 3_600_000,
+    // Bitget reports fundingRateInterval already in HOURS ("8"), and the fixture
+    // confirms it: nextUpdate lands on the 00/08/16 UTC settlement grid. Dividing
+    // by 3_600_000 treated it as milliseconds, so an 8-hour interval was reported
+    // as 0.00000222h and the memo rounded it away to nothing.
+    fundingIntervalHours: intervalHoursRaw,
     minFundingRatePct: min === null ? null : min * 100,
     maxFundingRatePct: max === null ? null : max * 100,
     nextUpdateTs: row ? toTs(row.nextUpdate) : null,
@@ -216,6 +220,10 @@ export interface EvidenceOptions {
  */
 export async function gatherEvidence(base: string, options: EvidenceOptions = {}): Promise<EvidenceResult> {
   const now = options.now ?? Date.now();
+  // Wall-clock start of THIS call. `now` is the observation timestamp and may be
+  // pinned by a caller (fixtures, regression tests), so it cannot double as a
+  // start time: Date.now() - now reported hours of phantom latency.
+  const startedAt = Date.now();
   const mode = resolveMode();
   const collector = new Collector();
 
@@ -238,7 +246,11 @@ export async function gatherEvidence(base: string, options: EvidenceOptions = {}
       getCandles({ category: FUTURES, symbol: pair.perpSymbol, interval: "1H", type: "index", limit: hourlyLimit }),
       getCandles({ category: FUTURES, symbol: pair.perpSymbol, interval: "1H", type: "market", limit: hourlyLimit }),
       getPremiumCandles(pair.perpSymbol, "1H", hourlyLimit),
-      getCandles({ category: SPOT, symbol: pair.rTokenSymbol, interval: "1D", limit: 30 }),
+      // limit=1000 matches the recorded fixture exactly (lib/fixtures/manifest.json).
+      // Fixture matching is exact by invariant 5, so any other limit is a permanent
+      // fixture_miss: the pack stays degraded and the daily volume leg stays empty.
+      // Live callers just get back however many daily candles exist.
+      getCandles({ category: SPOT, symbol: pair.rTokenSymbol, interval: "1D", limit: 1000 }),
       getIndexComponents(pair.perpSymbol),
       getOrderbook(SPOT, pair.rTokenSymbol),
       getFills(SPOT, pair.rTokenSymbol),
@@ -338,7 +350,7 @@ export async function gatherEvidence(base: string, options: EvidenceOptions = {}
     hours: series.length,
     degraded,
     sources: collector.records.length,
-    latencyMs: Date.now() - now,
+    latencyMs: Date.now() - startedAt,
   });
   return { ok: true, pack };
 }
