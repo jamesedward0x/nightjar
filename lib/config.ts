@@ -52,6 +52,45 @@ export type CacheTtlKey = keyof typeof CACHE_TTL_MS;
 /** Multi-name comparisons are capped to stay inside the serverless timeout. */
 export const MAX_SYMBOLS_PER_QUERY = 4;
 
+/**
+ * Hard cap on Qwen tool calls in ONE research turn. Enforced by lib/llm/loop.ts.
+ * Six is enough for the documented single-name plan (snapshot, distribution, two
+ * context tools, emit_memo) plus one retry, and low enough that a looping model
+ * cannot spend the whole serverless budget on one question.
+ */
+export const MAX_TOOL_CALLS = 6;
+
+/**
+ * Wall-clock budget for one research turn, in ms. Observed Qwen latency is 3-25s per
+ * call and a turn is 2-3 calls, so 90s is a real ceiling rather than a guess. The
+ * route exports a matching maxDuration; Vercel Hobby caps functions at 60s, so the
+ * loop also honours whatever the platform gives it (see app/api/research/route.ts).
+ */
+export const RESEARCH_TIMEOUT_MS = 90_000;
+
+/** Milliseconds of the budget held back so we can still emit the fallback memo. */
+export const BUDGET_RESERVE_MS = 12_000;
+/**
+ * Vercel Hobby caps one serverless function at 60s (Pro: 300s). The loop budget must
+ * fit inside whatever the platform actually grants, so the route exports
+ * `maxDuration = FUNCTION_MAX_DURATION_S` and the budget is clamped here - in one
+ * place, where it can be unit-tested - rather than at each call site.
+ */
+export const FUNCTION_MAX_DURATION_S = 60;
+/** Seconds held back at the end of the function for SSE teardown and the final flush. */
+export const FUNCTION_TEARDOWN_S = 5;
+
+/**
+ * The wall-clock budget one research turn may spend, clamped to the platform limit.
+ * RESEARCH_TIMEOUT_MS=90000 therefore yields 55s on Hobby, which is the honest number:
+ * a 90s promise we cannot keep would just produce a truncated stream.
+ */
+export function resolveResearchBudgetMs(env: NodeJS.ProcessEnv = process.env): number {
+  const requested = Number(env.RESEARCH_TIMEOUT_MS) || RESEARCH_TIMEOUT_MS;
+  const maxDurationS = Number(env.FUNCTION_MAX_DURATION_S) || FUNCTION_MAX_DURATION_S;
+  const platform = (maxDurationS - FUNCTION_TEARDOWN_S) * 1000;
+  return Math.max(15_000, Math.min(requested, platform));
+}
 export function resolveMode(env: NodeJS.ProcessEnv = process.env): RuntimeMode {
   return env.NIGHTJAR_MODE === "fixture" ? "fixture" : "live";
 }

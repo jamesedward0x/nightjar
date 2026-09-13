@@ -115,6 +115,11 @@ const ALLOWED_ENV = [
   "BITGET_API_BASE_URL",
   "NIGHTJAR_MODE",
   "NIGHTJAR_LOG_LEVEL",
+  // Phase 3 tuning knobs. Both are bounded in code (MAX_TOOL_CALLS default 6,
+  // RESEARCH_TIMEOUT_MS clamped to the platform limit), so a hostile value cannot
+  // turn into an unbounded loop or an unbounded function.
+  "MAX_TOOL_CALLS",
+  "RESEARCH_TIMEOUT_MS",
 ];
 
 describe("the SDK config Nightjar actually runs with", () => {
