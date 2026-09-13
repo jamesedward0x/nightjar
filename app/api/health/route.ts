@@ -123,7 +123,7 @@ function probeQwen(): SourceReport {
       api: "responses",
       store: false,
       exercised: false,
-      note: "Credential presence only. The bounded live probe arrives with the Phase 3 agent loop.",
+      note: "Credential presence only, never the value. The bounded live probe is POST /api/research, which streams the agent loop over SSE.",
     },
   };
 }

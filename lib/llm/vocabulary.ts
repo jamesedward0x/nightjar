@@ -24,11 +24,17 @@ export const MEMO_VERDICTS = [
 ] as const;
 export type MemoVerdict = (typeof MEMO_VERDICTS)[number];
 
+/**
+ * Labels are SIGN-NEUTRAL for the two magnitude bands. classifyVerdict ranks on
+ * |basis|, so a -0.5% reading lands in `elevated_premium`; calling that "elevated
+ * premium" on screen would contradict invariant 9 (the sign is itself informative).
+ * The signed bands below are exact, and the memo always states the sign explicitly.
+ */
 export const VERDICT_LABELS: Record<MemoVerdict, string> = {
   discount: "Trading at a discount to its reference",
   fair_pricing: "Tracking its reference closely",
   premium: "Trading at a premium to its reference",
-  elevated_premium: "Elevated premium - well outside normal tracking",
+  elevated_premium: "Well outside its normal tracking range",
   extreme_dislocation: "Extreme dislocation from its reference",
   insufficient_data: "Insufficient data to judge",
 };

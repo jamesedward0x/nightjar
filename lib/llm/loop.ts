@@ -38,10 +38,13 @@ import {
   type QwenInputItem,
   type QwenMessage,
   type QwenResult,
+  type QwenTool,
 } from "@/lib/llm/qwen";
 import {
   MEMO_TOOL_NAME,
+  MEMO_TOOL_ONLY,
   RESEARCH_TOOLS,
+  projectCoreEvidence,
   createToolContext,
   executeTool,
   summariseContext,
@@ -54,7 +57,13 @@ import {
   validateMemoArguments,
   type ResearchMemo,
 } from "@/lib/llm/memo";
-import { PROSE_NUDGE, buildInstructions, buildUserMessage, defaultPromptContext } from "@/lib/llm/prompts";
+import {
+  ENDGAME_INSTRUCTION,
+  PROSE_NUDGE,
+  buildInstructions,
+  buildUserMessage,
+  defaultPromptContext,
+} from "@/lib/llm/prompts";
 
 const log = createLogger("llm.loop");
 
@@ -64,6 +73,14 @@ export const MAX_TURNS = 5;
 export const MAX_PROSE_NUDGES = 1;
 /** One repair pass on a schema-invalid memo, per DECISION.md 7.3. */
 export const MAX_MEMO_REPAIRS = 1;
+
+/**
+ * When less than this remains, the loop stops investigating and spends everything left on
+ * ONE turn whose only available tool is emit_memo. Measured on Vercel: a run that fetched
+ * its six tools in six separate turns used all 55s and never reached the memo, so the
+ * endgame has to be forced rather than hoped for.
+ */
+export const FINAL_MEMO_RESERVE_MS = 22_000;
 
 /** Forward reasoning in readable chunks rather than one SSE frame per token. */
 const REASONING_FLUSH_CHARS = 160;
@@ -122,12 +139,13 @@ async function callQwen(
   input: QwenInputItem[],
   signal: AbortSignal,
   onReasoning: (delta: string) => void,
+  tools: QwenTool[],
 ): Promise<QwenResult> {
   const options = {
     config,
     instructions,
     input,
-    tools: RESEARCH_TOOLS,
+    tools,
     signal,
     maxOutputTokens: config.maxOutputTokens,
   };
@@ -150,7 +168,8 @@ export async function runResearchTurn(request: ResearchRequest): Promise<LoopSta
   const requestId = request.requestId ?? newRequestId();
   const mode = resolveMode();
   const budgetMs = request.budgetMs ?? resolveResearchBudgetMs();
-  const maxToolCalls = Number(process.env.MAX_TOOL_CALLS) || MAX_TOOL_CALLS;
+  // Clamped DOWN only, matching prompts.ts: an env var may tighten a hard budget, never loosen it.
+  const maxToolCalls = Math.max(1, Math.min(MAX_TOOL_CALLS, Number(process.env.MAX_TOOL_CALLS) || MAX_TOOL_CALLS));
   const softDeadline = startedAt + Math.max(5_000, budgetMs - BUDGET_RESERVE_MS);
   const promptCtx = defaultPromptContext(mode);
   const aiDisabled = request.disableAi === true;
@@ -240,8 +259,21 @@ export async function runResearchTurn(request: ResearchRequest): Promise<LoopSta
     }
 
     // --- 3. the loop -------------------------------------------------------
+    // Hand the model the standard investigation up front. The desk already paid for this
+    // pack, and at 10-25s per round trip inside a 55s budget, turns are the scarce
+    // resource - pre-seeding is what lets turn one be emit_memo instead of a fetch.
+    const preseed = projectCoreEvidence(preFetched);
+    trace({
+      kind: "note",
+      text:
+        "Desk pre-gathered " + preFetched.sources.length + " sources into " + preseed.length +
+        " bytes of computed evidence before the model was called.",
+    });
+
     const instructions = buildInstructions(promptCtx);
-    const input: QwenInputItem[] = [{ role: "user", content: buildUserMessage(request.question, promptCtx) }];
+    const input: QwenInputItem[] = [
+      { role: "user", content: buildUserMessage(request.question, promptCtx, preseed) },
+    ];
 
     let reasoningBuffer = "";
     let lastReasoningFlush = Date.now();
@@ -260,12 +292,26 @@ export async function runResearchTurn(request: ResearchRequest): Promise<LoopSta
 
     let nudges = 0;
     let repairs = 0;
+    let endgameUsed = false;
 
     while (!memo && !fallbackReason && turns < MAX_TURNS && !ctx.isAborted()) {
       turns += 1;
+      const remainingMs = startedAt + budgetMs - Date.now();
+      const endgame = remainingMs < FINAL_MEMO_RESERVE_MS;
+      if (endgame && !endgameUsed) {
+        endgameUsed = true;
+        trace({ kind: "note", text: "Budget down to " + Math.round(remainingMs / 1000) + "s - forcing emit_memo." });
+      }
       let result: QwenResult;
       try {
-        result = await callQwen(qwen, instructions, input, controller.signal, onReasoning);
+        result = await callQwen(
+          qwen,
+          endgame ? instructions + ENDGAME_INSTRUCTION : instructions,
+          input,
+          controller.signal,
+          onReasoning,
+          endgame ? MEMO_TOOL_ONLY : RESEARCH_TOOLS,
+        );
       } catch (err) {
         if ((err as Error)?.name === "AbortError" || timedOut) {
           fallbackReason = "the " + Math.round(budgetMs / 1000) + "s research budget expired mid-turn";
@@ -329,6 +375,18 @@ export async function runResearchTurn(request: ResearchRequest): Promise<LoopSta
           continue;
         }
 
+        if (endgame) {
+          input.push({
+            type: "function_call_output",
+            call_id: call.callId,
+            output: JSON.stringify({
+              error: "no budget remains for another fetch",
+              instruction: "Call emit_memo now with the evidence you already hold.",
+            }),
+          });
+          continue;
+        }
+
         if (toolCalls >= maxToolCalls) {
           trace({ kind: "note", text: "Tool budget exhausted at " + maxToolCalls + " calls." });
           input.push({
@@ -369,6 +427,10 @@ export async function runResearchTurn(request: ResearchRequest): Promise<LoopSta
             : "the research turn was cancelled";
           break;
         }
+      }
+
+      if (endgame && !memo && !fallbackReason) {
+        fallbackReason = "the final forced emit_memo turn produced no schema-valid memo";
       }
     }
 

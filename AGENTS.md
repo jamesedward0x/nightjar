@@ -80,12 +80,12 @@ Fast loop is `typecheck` + `test`. Do not run `build` after every change.
 | Phase | Scope | State |
 |---|---|---|
 | 0 | Approve the research base | done |
-| 1 | Scaffold + verified read-only data layer | done (45 tests green) |
-| 2 | Deterministic compute engine (basis, sessions, liquidity, analogues) | **next** |
-| 3 | Qwen agent loop + structured memo | not started |
-| 4 | LUI, streaming, charts | not started |
+| 1 | Scaffold + verified read-only data layer | done |
+| 2 | Deterministic compute engine (basis, sessions, liquidity, analogues) | done |
+| 3 | Qwen agent loop + structured memo | done |
+| 4 | LUI, streaming, charts | in progress (UI) |
 | 5 | Hardening: fixtures, tests, observability, security | not started |
-| 6 | Vercel deployment + reproducible README | not started |
+| 6 | Vercel deployment + reproducible README | deployed - https://nightjar-seven.vercel.app |
 | 7 | Submission package | not started |
 
 Scope cuts if time runs out: DECISION.md 8.2, in that order. Never cut honest labelling of fixture

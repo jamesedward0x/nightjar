@@ -24,7 +24,7 @@ import { resolveResearchBudgetMs } from "@/lib/config";
 import { getUniverse, matchPair } from "@/lib/bitget/universe";
 import { runResearchTurn } from "@/lib/llm/loop";
 import type { ResearchEvent } from "@/lib/research/contract";
-import { createLogger, errMessage } from "@/lib/observability/logger";
+import { createLogger, errMessage, newRequestId } from "@/lib/observability/logger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -111,6 +111,7 @@ export async function POST(request: Request): Promise<Response | NextResponse> {
   }
 
   const budgetMs = resolveResearchBudgetMs();
+  const requestId = newRequestId();
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream<Uint8Array>({
@@ -133,6 +134,7 @@ export async function POST(request: Request): Promise<Response | NextResponse> {
 
       try {
         await runResearchTurn({
+          requestId,
           question,
           symbol: resolved.symbol,
           budgetMs,
@@ -168,7 +170,9 @@ export async function POST(request: Request): Promise<Response | NextResponse> {
       "cache-control": "no-store, no-transform",
       connection: "keep-alive",
       "x-accel-buffering": "no",
-      "x-request-id": resolved.symbol,
+      // The same id the loop emits in its `start` event, so a browser trace and a server
+      // log line can be joined. It was the symbol before, which correlated nothing.
+      "x-request-id": requestId,
     },
   });
 }

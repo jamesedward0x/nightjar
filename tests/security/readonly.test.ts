@@ -120,6 +120,11 @@ const ALLOWED_ENV = [
   // turn into an unbounded loop or an unbounded function.
   "MAX_TOOL_CALLS",
   "RESEARCH_TIMEOUT_MS",
+  // Both are read through a defaulted `env: NodeJS.ProcessEnv = process.env` parameter, so
+  // the process.env.NAME scan below cannot see them. Listed explicitly so the allowlist
+  // stays a true inventory of what this app reads.
+  "FUNCTION_MAX_DURATION_S",
+  "QWEN_MAX_OUTPUT_TOKENS",
 ];
 
 describe("the SDK config Nightjar actually runs with", () => {
