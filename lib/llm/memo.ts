@@ -23,42 +23,28 @@ import { z } from "zod";
 import { BASIS_SIGN_CONVENTION } from "@/lib/compute/basis";
 import { round } from "@/lib/compute/stats";
 import type { EvidencePack } from "@/lib/research/evidence";
+import {
+  DECISION_OPTIONS,
+  FALLBACK_BANNER,
+  MEMO_VERDICTS,
+  NON_EXECUTION_STATEMENT,
+  VERDICT_LABELS,
+  classifyVerdict,
+} from "@/lib/llm/vocabulary";
 
-export const NON_EXECUTION_STATEMENT =
-  "Nightjar is research only. It holds no credentials, exposes no order controls, and cannot place, amend or cancel a trade. The decision and the execution are entirely yours.";
-
-export const FALLBACK_BANNER =
-  "AI synthesis unavailable - showing computed data only. Every figure below is deterministic and sourced; only the narrative is templated.";
-
-export const MEMO_VERDICTS = [
-  "discount",
-  "fair_pricing",
-  "premium",
-  "elevated_premium",
-  "extreme_dislocation",
-  "insufficient_data",
-] as const;
-export type MemoVerdict = (typeof MEMO_VERDICTS)[number];
-
-export const VERDICT_LABELS: Record<MemoVerdict, string> = {
-  discount: "Trading at a discount to its reference",
-  fair_pricing: "Tracking its reference closely",
-  premium: "Trading at a premium to its reference",
-  elevated_premium: "Elevated premium - well outside normal tracking",
-  extreme_dislocation: "Extreme dislocation from its reference",
-  insufficient_data: "Insufficient data to judge",
-};
-
-export const DECISION_OPTIONS = ["hold", "trim", "hedge_with_perp", "wait_for_open", "add"] as const;
-export type DecisionOption = (typeof DECISION_OPTIONS)[number];
-
-export const DECISION_LABELS: Record<DecisionOption, string> = {
-  hold: "Hold",
-  trim: "Trim",
-  hedge_with_perp: "Hedge with the perp",
-  wait_for_open: "Wait for the US open",
-  add: "Add",
-};
+// Vocabulary lives in lib/llm/vocabulary.ts so the client can import the labels
+// without dragging zod, the compute engine and luxon into the browser bundle.
+export {
+  DECISION_LABELS,
+  DECISION_OPTIONS,
+  FALLBACK_BANNER,
+  MEMO_VERDICTS,
+  NON_EXECUTION_STATEMENT,
+  VERDICT_LABELS,
+  VERDICT_TONE,
+} from "@/lib/llm/vocabulary";
+export type { DecisionOption, MemoVerdict } from "@/lib/llm/vocabulary";
+export { classifyVerdict } from "@/lib/llm/vocabulary";
 
 /** What the model must produce. Length floors stop it answering with one lazy clause. */
 export const memoSchema = z.object({
@@ -67,7 +53,7 @@ export const memoSchema = z.object({
   bottom_line: z.string().min(40).max(700),
   the_number: z.string().min(30).max(600),
   session_context: z.string().min(30).max(600),
-  is_this_normal: z.string().min(30).max(700),
+  is_this_normal: z.string().min(30).max(900),
   reference_integrity: z.string().min(30).max(700),
   liquidity_reality: z.string().min(30).max(800),
   derivatives_context: z.string().min(30).max(700),
@@ -155,15 +141,7 @@ export function isoTs(ts: number | null | undefined): string {
   return new Date(ts).toISOString().replace("T", " ").slice(0, 16) + " UTC";
 }
 
-/** Map a basis reading onto the verdict vocabulary. Thresholds are documented, not magic. */
-export function classifyVerdict(basisPct: number | null): MemoVerdict {
-  if (basisPct === null || !Number.isFinite(basisPct)) return "insufficient_data";
-  const a = Math.abs(basisPct);
-  if (a >= 0.75) return "extreme_dislocation";
-  if (a >= 0.35) return "elevated_premium";
-  if (a >= 0.1) return basisPct > 0 ? "premium" : "discount";
-  return "fair_pricing";
-}
+// classifyVerdict moved to lib/llm/vocabulary.ts so the client can import it without zod.
 
 // --------------------------------------------------- deterministic fallback
 
@@ -304,9 +282,11 @@ export function buildFallbackMemo(pack: EvidencePack, reason?: string): Research
           ? "With the underlying live, the rToken is being arbitraged against a price that exists, which is why tracking is tightest here."
           : "With the underlying shut there is no live reference to arbitrage against, so the rToken is priced by whoever is in the room - which is precisely when it detaches.")
       : "Session context unavailable.",
+    // Invariant 3: a distribution statistic without its observation window is meaningless,
+    // because the 1H endpoint is capped at 1000 rows and the window slides forward hourly.
     is_this_normal: snap
-      ? `This reading is ${percentileText}. ${worstText} ${ratioText} ${perpText} ${exceedText}`
-      : "No distribution was available to judge this reading against.",
+      ? `This reading is ${percentileText}, drawn from ${windowText}. ${worstText} ${ratioText} ${perpText} ${exceedText}`
+      : `No distribution was available to judge this reading against (${windowText}).`,
     reference_integrity: referenceText,
     liquidity_reality: liquidityText + turnoverText + tapeText,
     derivatives_context: derivativesText,

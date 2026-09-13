@@ -43,6 +43,7 @@ const HEARTBEAT_MS = 15_000;
 const requestSchema = z.object({
   question: z.string().min(3).max(600),
   symbol: z.string().min(1).max(24).optional(),
+  disableAi: z.boolean().optional(),
 });
 
 type Resolved = { ok: true; symbol: string; matched: boolean } | { ok: false; message: string; hint?: string };
@@ -137,6 +138,7 @@ export async function POST(request: Request): Promise<Response | NextResponse> {
           budgetMs,
           emit: send,
           signal: request.signal,
+          disableAi: parsed.data.disableAi === true,
         });
       } catch (err) {
         const message = errMessage(err);

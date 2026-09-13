@@ -78,6 +78,12 @@ export interface ResearchRequest {
   budgetMs?: number;
   /** Client disconnect. Aborts in-flight gateway and upstream work. */
   signal?: AbortSignal;
+  /**
+   * Force the deterministic path even when a key is configured. This is a product
+   * feature, not a test hook: the UI exposes it as "Computed memo (no AI)" so a reader
+   * can see that every number survives the removal of the model.
+   */
+  disableAi?: boolean;
 }
 
 interface Usage {
@@ -147,7 +153,8 @@ export async function runResearchTurn(request: ResearchRequest): Promise<LoopSta
   const maxToolCalls = Number(process.env.MAX_TOOL_CALLS) || MAX_TOOL_CALLS;
   const softDeadline = startedAt + Math.max(5_000, budgetMs - BUDGET_RESERVE_MS);
   const promptCtx = defaultPromptContext(mode);
-  const qwen = resolveQwenConfig();
+  const aiDisabled = request.disableAi === true;
+  const qwen = aiDisabled ? null : resolveQwenConfig();
 
   const controller = new AbortController();
   let timedOut = false;
@@ -222,7 +229,9 @@ export async function runResearchTurn(request: ResearchRequest): Promise<LoopSta
 
     // --- 2. no key: the deterministic memo is the product, not a stub -------
     if (!qwen) {
-      fallbackReason = "BITGET_QWEN_API_KEY is not configured on this deployment.";
+      fallbackReason = aiDisabled
+        ? "AI synthesis was switched off for this run; every figure below is computed, not generated."
+        : "BITGET_QWEN_API_KEY is not configured on this deployment.";
       memo = buildFallbackMemo(preFetched, fallbackReason);
       trace({ kind: "note", text: "AI synthesis disabled - emitting the computed memo." });
       emit({ type: "memo", memo });

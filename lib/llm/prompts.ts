@@ -1,4 +1,4 @@
-﻿/**
+/**
  * The system prompt. Every rule here exists because something specific goes wrong
  * without it - most of them are load-bearing for the judging criteria, and two are
  * load-bearing for safety.
@@ -92,7 +92,9 @@ export function buildUserMessage(question: string, ctx: PromptContext): string {
   const trimmed = question.trim().slice(0, 2000);
   return (
     trimmed +
-    "\n\n(Investigate with the tools, then call emit_memo. Remember: every figure must come from a tool result.)"
+    "\n\n(Investigate with the tools, then call emit_memo. Budget: " +
+    ctx.maxToolCalls +
+    " tool calls. Remember: every figure must come from a tool result you actually received.)"
   );
 }
 
