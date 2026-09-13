@@ -12,7 +12,7 @@
  * a stated reason rather than taking the page down, which is invariant 2 in AGENTS.md.
  */
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import type { ClientPack } from "@/lib/research/contract";
 import type { SessionKind } from "@/lib/compute/types";
@@ -382,15 +382,58 @@ function QualityPanel({ pack }: { pack: ClientPack }) {
   );
 }
 
+/**
+ * Tab order mirrors the memo's own section order (session, reference, liquidity,
+ * derivatives, analogues, data quality), so the reader can jump from a claim in the
+ * memo straight to the measurement underneath it without hunting down a scroll.
+ */
+const EVIDENCE_TABS = [
+  { id: "session", label: "Session" },
+  { id: "reference", label: "Reference" },
+  { id: "liquidity", label: "Exit costs" },
+  { id: "derivatives", label: "Derivatives" },
+  { id: "analogues", label: "History" },
+  { id: "quality", label: "Data quality" },
+] as const;
+
+type EvidenceTab = (typeof EVIDENCE_TABS)[number]["id"];
+
 export function EvidencePanels({ pack }: { pack: ClientPack }) {
+  const [tab, setTab] = useState<EvidenceTab>("session");
+  const active = EVIDENCE_TABS.find((candidate) => candidate.id === tab) ?? EVIDENCE_TABS[0];
+
   return (
-    <div className="grid-2">
-      <SessionPanel pack={pack} />
-      <DerivativesPanel pack={pack} />
-      <ReferencePanel pack={pack} />
-      <LiquidityPanel pack={pack} />
-      <AnaloguePanel pack={pack} />
-      <QualityPanel pack={pack} />
-    </div>
+    <section className="panel evidence-group">
+      <div className="panel-tabs" role="tablist" aria-label="Evidence behind this memo">
+        {EVIDENCE_TABS.map((candidate) => (
+          <button
+            key={candidate.id}
+            type="button"
+            role="tab"
+            id={"evidence-tab-" + candidate.id}
+            aria-selected={candidate.id === active.id}
+            aria-controls="evidence-tabpanel"
+            className={"panel-tab" + (candidate.id === active.id ? " on" : "")}
+            onClick={() => setTab(candidate.id)}
+          >
+            {candidate.label}
+          </button>
+        ))}
+      </div>
+
+      <div
+        className="panel-tabbody"
+        role="tabpanel"
+        id="evidence-tabpanel"
+        aria-labelledby={"evidence-tab-" + active.id}
+      >
+        {active.id === "session" ? <SessionPanel pack={pack} /> : null}
+        {active.id === "reference" ? <ReferencePanel pack={pack} /> : null}
+        {active.id === "liquidity" ? <LiquidityPanel pack={pack} /> : null}
+        {active.id === "derivatives" ? <DerivativesPanel pack={pack} /> : null}
+        {active.id === "analogues" ? <AnaloguePanel pack={pack} /> : null}
+        {active.id === "quality" ? <QualityPanel pack={pack} /> : null}
+      </div>
+    </section>
   );
 }
