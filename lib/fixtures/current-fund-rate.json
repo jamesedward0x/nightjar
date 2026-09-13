@@ -1,0 +1,32 @@
+{
+  "fixtureVersion": 1,
+  "name": "current-fund-rate",
+  "recordedAt": "2026-09-13T11:50:07.005Z",
+  "endpoint": "GET /api/v3/market/current-fund-rate?symbol=AAPLUSDT",
+  "request": {
+    "path": "/current-fund-rate",
+    "query": {
+      "symbol": "AAPLUSDT"
+    }
+  },
+  "httpStatus": 200,
+  "latencyMs": 142,
+  "response": {
+    "code": "00000",
+    "msg": "success",
+    "requestTime": 1789300214539,
+    "data": [
+      {
+        "symbol": "AAPLUSDT",
+        "fundingRate": "0",
+        "fundingRateInterval": "8",
+        "nextUpdate": "1789315200000",
+        "minFundingRate": "-0.005",
+        "maxFundingRate": "0.005",
+        "cashDividend": "",
+        "cashDividendNextUpdate": "null"
+      }
+    ]
+  },
+  "truncated": null
+}

@@ -1,0 +1,31 @@
+{
+  "fixtureVersion": 1,
+  "name": "open-interest",
+  "recordedAt": "2026-09-13T11:50:07.005Z",
+  "endpoint": "GET /api/v3/market/open-interest?symbol=AAPLUSDT&category=USDT-FUTURES&limit=50",
+  "request": {
+    "path": "/open-interest",
+    "query": {
+      "symbol": "AAPLUSDT",
+      "category": "USDT-FUTURES",
+      "limit": "50"
+    }
+  },
+  "httpStatus": 200,
+  "latencyMs": 156,
+  "response": {
+    "code": "00000",
+    "msg": "success",
+    "requestTime": 1789300215146,
+    "data": {
+      "list": [
+        {
+          "symbol": "AAPLUSDT",
+          "openInterest": "20051.940000000001"
+        }
+      ],
+      "ts": "1789300215147"
+    }
+  },
+  "truncated": null
+}

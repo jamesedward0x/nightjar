@@ -1,0 +1,46 @@
+{
+  "fixtureVersion": 1,
+  "name": "tickers-futures-symbol",
+  "recordedAt": "2026-09-13T11:50:07.005Z",
+  "endpoint": "GET /api/v3/market/tickers?category=USDT-FUTURES&symbol=AAPLUSDT",
+  "request": {
+    "path": "/tickers",
+    "query": {
+      "category": "USDT-FUTURES",
+      "symbol": "AAPLUSDT"
+    }
+  },
+  "httpStatus": 200,
+  "latencyMs": 141,
+  "response": {
+    "code": "00000",
+    "msg": "success",
+    "requestTime": 1789300209667,
+    "data": [
+      {
+        "category": "USDT-FUTURES",
+        "symbol": "AAPLUSDT",
+        "ts": "1789300208745",
+        "lastPrice": "331.18",
+        "openPrice24h": "333.26",
+        "highPrice24h": "333.91",
+        "lowPrice24h": "330.16",
+        "ask1Price": "331.22",
+        "bid1Price": "331.21",
+        "bid1Size": "0.68",
+        "ask1Size": "231.86",
+        "price24hPcnt": "-0.00624",
+        "volume24h": "1720.74",
+        "turnover24h": "572515.2521",
+        "indexPrice": "331.1578477027067626",
+        "markPrice": "331.18",
+        "fundingRate": "0",
+        "openInterest": "20051.940000000001",
+        "deliveryStartTime": "",
+        "deliveryTime": "",
+        "deliveryStatus": ""
+      }
+    ]
+  },
+  "truncated": null
+}

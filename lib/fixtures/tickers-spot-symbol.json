@@ -1,0 +1,40 @@
+{
+  "fixtureVersion": 1,
+  "name": "tickers-spot-symbol",
+  "recordedAt": "2026-09-13T11:50:07.005Z",
+  "endpoint": "GET /api/v3/market/tickers?category=SPOT&symbol=RAAPLUSDT",
+  "request": {
+    "path": "/tickers",
+    "query": {
+      "category": "SPOT",
+      "symbol": "RAAPLUSDT"
+    }
+  },
+  "httpStatus": 200,
+  "latencyMs": 138,
+  "response": {
+    "code": "00000",
+    "msg": "success",
+    "requestTime": 1789300209368,
+    "data": [
+      {
+        "category": "SPOT",
+        "symbol": "RAAPLUSDT",
+        "ts": "1789300208487",
+        "lastPrice": "332.78",
+        "openPrice24h": "332.77",
+        "highPrice24h": "333.67",
+        "lowPrice24h": "330.72",
+        "ask1Price": "332.78",
+        "bid1Price": "330.98",
+        "bid1Size": "1.4364",
+        "ask1Size": "0.1117",
+        "price24hPcnt": "0.00003",
+        "volume24h": "52.0625",
+        "turnover24h": "17297.9909",
+        "platformTurnover24h": "27128.753"
+      }
+    ]
+  },
+  "truncated": null
+}

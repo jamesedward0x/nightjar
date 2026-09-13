@@ -1,0 +1,221 @@
+{
+  "probedAt": "2026-09-13T12:00:01.365Z",
+  "base": "https://hackathon.bitgetops.com/v1",
+  "model": "qwen3.8-max",
+  "results": [
+    {
+      "label": "A. /v1/responses plain (instruct)",
+      "pathName": "/responses",
+      "httpStatus": 200,
+      "latencyMs": 3230,
+      "body": {
+        "background": false,
+        "completed_at": 1789300793,
+        "created_at": 1789300792,
+        "frequency_penalty": 0,
+        "id": "resp_a70d021a-8f27-9b95-aba2-3016d7d7b4c9",
+        "max_output_tokens": 2000,
+        "metadata": {},
+        "model": "qwen3.8-max",
+        "object": "response",
+        "output": [
+          {
+            "id": "msg_e0d9ed90-f967-40c2-8b30-673a34e5e2ff",
+            "summary": [
+              {
+                "text": "We need to respond to user: \"Reply with exactly the word PONG and nothing else.\" Need final exactly PONG. Ensure no extra.\n",
+                "type": "summary_text"
+              }
+            ],
+            "type": "reasoning"
+          },
+          {
+            "content": [
+              {
+                "annotations": [],
+                "text": "PONG",
+                "type": "output_text"
+              }
+            ],
+            "id": "msg_4e045791-c606-4962-b0e6-a77334fd1e72",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message"
+          }
+        ],
+        "parallel_tool_calls": true,
+        "presence_penalty": 0,
+        "service_tier": "default",
+        "status": "completed",
+        "store": false,
+        "temperature": 1,
+        "tool_choice": "auto",
+        "tools": [],
+        "top_logprobs": 0,
+        "top_p": 1,
+        "usage": {
+          "input_tokens": 95,
+          "input_tokens_details": {
+            "cached_tokens": 0
+          },
+          "output_tokens": 34,
+          "output_tokens_details": {
+            "reasoning_tokens": 29
+          },
+          "total_tokens": 129,
+          "x_details": [
+            {
+              "input_tokens": 95,
+              "output_tokens": 34,
+              "output_tokens_details": {
+                "reasoning_tokens": 29
+              },
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 129,
+              "x_billing_type": "response_api"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "label": "B. /v1/chat/completions (expected 404)",
+      "pathName": "/chat/completions",
+      "httpStatus": 200,
+      "latencyMs": 2700,
+      "body": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "message": {
+              "content": "PONG",
+              "reasoning_content": "We need respond to user: \"Reply with exactly the word PONG.\" Need final exactly PONG. Ensure no extra.",
+              "role": "assistant"
+            }
+          }
+        ],
+        "created": 1789300794,
+        "id": "chatcmpl-fbe6e875-e9fe-425e-8399-0d083af94689",
+        "model": "qwen3.8-max",
+        "object": "chat.completion",
+        "usage": {
+          "completion_tokens": 29,
+          "completion_tokens_details": {
+            "reasoning_tokens": 25,
+            "text_tokens": 29
+          },
+          "prompt_tokens": 69,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "text_tokens": 69
+          },
+          "total_tokens": 98
+        }
+      }
+    },
+    {
+      "label": "C. /responses flat tool + tool_choice:required",
+      "pathName": "/responses",
+      "httpStatus": 400,
+      "latencyMs": 1349,
+      "body": {
+        "request_id": "3e3b3a8c-6738-984c-a1a6-832baf7e7cd1",
+        "code": "InvalidParameter",
+        "message": "<400> InternalError.Algo.InvalidParameter: The tool_choice parameter does not support being set to required or object in thinking mode"
+      }
+    },
+    {
+      "label": "D. /responses flat tool + tool_choice:auto",
+      "pathName": "/responses",
+      "httpStatus": 200,
+      "latencyMs": 3576,
+      "body": {
+        "background": false,
+        "completed_at": 1789300800,
+        "created_at": 1789300799,
+        "frequency_penalty": 0,
+        "id": "resp_626553f2-ed31-932c-b2c6-1fe3ff370ceb",
+        "max_output_tokens": 2000,
+        "metadata": {},
+        "model": "qwen3.8-max",
+        "object": "response",
+        "output": [
+          {
+            "id": "msg_bc7d8401-c663-4dca-83ba-96808dd7393b",
+            "summary": [
+              {
+                "text": "The user wants me to call the get_basis tool for RAAPLUSDT and not answer in prose.\n\nSo I should just call the tool and then present the result without prose commentary.",
+                "type": "summary_text"
+              }
+            ],
+            "type": "reasoning"
+          },
+          {
+            "arguments": "{\"symbol\": \"RAAPLUSDT\"}",
+            "call_id": "call_ba28f663bd584f75b491e733",
+            "id": "msg_df47c6e6-2ad6-4587-a73e-d53acaf93ce8",
+            "name": "get_basis",
+            "status": "completed",
+            "type": "function_call"
+          }
+        ],
+        "parallel_tool_calls": true,
+        "presence_penalty": 0,
+        "service_tier": "default",
+        "status": "completed",
+        "store": false,
+        "temperature": 1,
+        "tool_choice": "auto",
+        "tools": [
+          {
+            "description": "Return the spot-vs-index basis percent for one symbol.",
+            "name": "get_basis",
+            "parameters": {
+              "properties": {
+                "symbol": {
+                  "description": "Bitget symbol, e.g. RAAPLUSDT",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "symbol"
+              ],
+              "type": "object"
+            },
+            "type": "function"
+          }
+        ],
+        "top_logprobs": 0,
+        "top_p": 1,
+        "usage": {
+          "input_tokens": 378,
+          "input_tokens_details": {
+            "cached_tokens": 0
+          },
+          "output_tokens": 71,
+          "output_tokens_details": {
+            "reasoning_tokens": 39
+          },
+          "total_tokens": 449,
+          "x_details": [
+            {
+              "input_tokens": 378,
+              "output_tokens": 71,
+              "output_tokens_details": {
+                "reasoning_tokens": 39
+              },
+              "prompt_tokens_details": {
+                "cached_tokens": 0
+              },
+              "total_tokens": 449,
+              "x_billing_type": "response_api"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

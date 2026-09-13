@@ -1,0 +1,177 @@
+{
+  "fixtureVersion": 1,
+  "generatedAt": "2026-09-13T12:20:03.997Z",
+  "recordedAt": "2026-09-13T11:50:07.005Z",
+  "base": "https://api.bitget.com/api/v3/market",
+  "count": 24,
+  "entries": [
+    {
+      "key": "/candles?category=SPOT&interval=1D&limit=1000&symbol=RAAPLUSDT",
+      "name": "candles-spot-market-1d",
+      "file": "lib/fixtures/candles-spot-market-1d.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/candles?category=SPOT&symbol=RAAPLUSDT&interval=1D&limit=1000"
+    },
+    {
+      "key": "/candles?category=SPOT&interval=1H&limit=1000&symbol=RAAPLUSDT",
+      "name": "candles-spot-market-1h",
+      "file": "lib/fixtures/candles-spot-market-1h.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/candles?category=SPOT&symbol=RAAPLUSDT&interval=1H&limit=1000"
+    },
+    {
+      "key": "/candles?category=USDT-FUTURES&interval=1D&limit=1000&symbol=AAPLUSDT&type=index",
+      "name": "candles-futures-index-1d",
+      "file": "lib/fixtures/candles-futures-index-1d.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/candles?category=USDT-FUTURES&symbol=AAPLUSDT&interval=1D&type=index&limit=1000"
+    },
+    {
+      "key": "/candles?category=USDT-FUTURES&interval=1D&limit=1000&symbol=AAPLUSDT&type=premium",
+      "name": "candles-futures-premium-1d",
+      "file": "lib/fixtures/candles-futures-premium-1d.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/candles?category=USDT-FUTURES&symbol=AAPLUSDT&interval=1D&type=premium&limit=1000"
+    },
+    {
+      "key": "/candles?category=USDT-FUTURES&interval=1H&limit=1000&symbol=AAPLUSDT&type=index",
+      "name": "candles-futures-index-1h",
+      "file": "lib/fixtures/candles-futures-index-1h.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/candles?category=USDT-FUTURES&symbol=AAPLUSDT&interval=1H&type=index&limit=1000"
+    },
+    {
+      "key": "/candles?category=USDT-FUTURES&interval=1H&limit=1000&symbol=AAPLUSDT&type=market",
+      "name": "candles-futures-market-1h",
+      "file": "lib/fixtures/candles-futures-market-1h.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/candles?category=USDT-FUTURES&symbol=AAPLUSDT&interval=1H&type=market&limit=1000"
+    },
+    {
+      "key": "/candles?category=USDT-FUTURES&interval=1H&limit=1000&symbol=AAPLUSDT&type=premium",
+      "name": "candles-futures-premium-1h",
+      "file": "lib/fixtures/candles-futures-premium-1h.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/candles?category=USDT-FUTURES&symbol=AAPLUSDT&interval=1H&type=premium&limit=1000"
+    },
+    {
+      "key": "/current-fund-rate?symbol=AAPLUSDT",
+      "name": "current-fund-rate",
+      "file": "lib/fixtures/current-fund-rate.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/current-fund-rate?symbol=AAPLUSDT"
+    },
+    {
+      "key": "/discount-rate",
+      "name": "discount-rate",
+      "file": "lib/fixtures/discount-rate.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/discount-rate"
+    },
+    {
+      "key": "/fills?category=SPOT&limit=100&symbol=RAAPLUSDT",
+      "name": "fills-spot",
+      "file": "lib/fixtures/fills-spot.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/fills?category=SPOT&symbol=RAAPLUSDT&limit=100"
+    },
+    {
+      "key": "/fills?category=USDT-FUTURES&limit=100&symbol=AAPLUSDT",
+      "name": "fills-futures",
+      "file": "lib/fixtures/fills-futures.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/fills?category=USDT-FUTURES&symbol=AAPLUSDT&limit=100"
+    },
+    {
+      "key": "/history-candles?category=SPOT&interval=1D&limit=100&symbol=RAAPLUSDT",
+      "name": "history-candles-spot-1d",
+      "file": "lib/fixtures/history-candles-spot-1d.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/history-candles?category=SPOT&symbol=RAAPLUSDT&interval=1D&limit=100"
+    },
+    {
+      "key": "/history-candles?category=USDT-FUTURES&interval=1D&limit=100&symbol=AAPLUSDT&type=index",
+      "name": "history-candles-futures-index-1d",
+      "file": "lib/fixtures/history-candles-futures-index-1d.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/history-candles?category=USDT-FUTURES&symbol=AAPLUSDT&interval=1D&type=index&limit=100"
+    },
+    {
+      "key": "/history-fund-rate?category=USDT-FUTURES&pageSize=50&symbol=AAPLUSDT",
+      "name": "history-fund-rate",
+      "file": "lib/fixtures/history-fund-rate.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/history-fund-rate?symbol=AAPLUSDT&category=USDT-FUTURES&pageSize=50"
+    },
+    {
+      "key": "/index-components?symbol=AAPLUSDT",
+      "name": "index-components",
+      "file": "lib/fixtures/index-components.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/index-components?symbol=AAPLUSDT"
+    },
+    {
+      "key": "/instruments?category=SPOT",
+      "name": "instruments-spot",
+      "file": "lib/fixtures/instruments-spot.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/instruments?category=SPOT"
+    },
+    {
+      "key": "/instruments?category=USDT-FUTURES",
+      "name": "instruments-usdt-futures",
+      "file": "lib/fixtures/instruments-usdt-futures.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/instruments?category=USDT-FUTURES"
+    },
+    {
+      "key": "/open-interest?category=USDT-FUTURES&limit=50&symbol=AAPLUSDT",
+      "name": "open-interest",
+      "file": "lib/fixtures/open-interest.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/open-interest?symbol=AAPLUSDT&category=USDT-FUTURES&limit=50"
+    },
+    {
+      "key": "/orderbook?category=SPOT&limit=20&symbol=RAAPLUSDT",
+      "name": "orderbook-spot",
+      "file": "lib/fixtures/orderbook-spot.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/orderbook?category=SPOT&symbol=RAAPLUSDT&limit=20"
+    },
+    {
+      "key": "/orderbook?category=USDT-FUTURES&limit=20&symbol=AAPLUSDT",
+      "name": "orderbook-futures",
+      "file": "lib/fixtures/orderbook-futures.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/orderbook?category=USDT-FUTURES&symbol=AAPLUSDT&limit=20"
+    },
+    {
+      "key": "/tickers?category=SPOT",
+      "name": "tickers-spot-all",
+      "file": "lib/fixtures/tickers-spot-all.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/tickers?category=SPOT"
+    },
+    {
+      "key": "/tickers?category=SPOT&symbol=RAAPLUSDT",
+      "name": "tickers-spot-symbol",
+      "file": "lib/fixtures/tickers-spot-symbol.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/tickers?category=SPOT&symbol=RAAPLUSDT"
+    },
+    {
+      "key": "/tickers?category=USDT-FUTURES",
+      "name": "tickers-futures-all",
+      "file": "lib/fixtures/tickers-futures-all.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/tickers?category=USDT-FUTURES"
+    },
+    {
+      "key": "/tickers?category=USDT-FUTURES&symbol=AAPLUSDT",
+      "name": "tickers-futures-symbol",
+      "file": "lib/fixtures/tickers-futures-symbol.json",
+      "recordedAt": "2026-09-13T11:50:07.005Z",
+      "endpoint": "GET /api/v3/market/tickers?category=USDT-FUTURES&symbol=AAPLUSDT"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "nightjar-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Nightjar - a 7x24 tokenized US equity research desk. Track 3 / Personalized Research Workbench, Bitget AI Hackathon S2.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "record-fixtures": "node scripts/record-fixtures.mjs",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "dependencies": {
+    "@bitget-ai/bitget-agent-sdk": "^1",
+    "luxon": "^3.5.0",
+    "next": "^15",
+    "react": "^19",
+    "react-dom": "^19",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15",
+    "typescript": "^5",
+    "vitest": "^3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

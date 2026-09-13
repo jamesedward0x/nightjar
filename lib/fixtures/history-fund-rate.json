@@ -1,0 +1,126 @@
+{
+  "fixtureVersion": 1,
+  "name": "history-fund-rate",
+  "recordedAt": "2026-09-13T11:50:07.005Z",
+  "endpoint": "GET /api/v3/market/history-fund-rate?symbol=AAPLUSDT&category=USDT-FUTURES&pageSize=50",
+  "request": {
+    "path": "/history-fund-rate",
+    "query": {
+      "symbol": "AAPLUSDT",
+      "category": "USDT-FUTURES",
+      "pageSize": "50"
+    }
+  },
+  "httpStatus": 200,
+  "latencyMs": 149,
+  "response": {
+    "code": "00000",
+    "msg": "success",
+    "requestTime": 1789300214840,
+    "data": {
+      "resultList": [
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789286400000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789257600000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789228800000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789200000000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789171200000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789142400000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789113600000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789084800000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789056000000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1789027200000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1788998400000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0.000199",
+          "fundingRateTimestamp": "1788969600000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1788940800000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0.000136",
+          "fundingRateTimestamp": "1788912000000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0.000121",
+          "fundingRateTimestamp": "1788883200000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1788854400000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1788825600000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1788796800000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1788768000000"
+        },
+        {
+          "symbol": "AAPLUSDT",
+          "fundingRate": "0",
+          "fundingRateTimestamp": "1788739200000"
+        }
+      ]
+    }
+  },
+  "truncated": null
+}

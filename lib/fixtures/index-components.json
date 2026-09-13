@@ -1,0 +1,43 @@
+{
+  "fixtureVersion": 1,
+  "name": "index-components",
+  "recordedAt": "2026-09-13T11:50:07.005Z",
+  "endpoint": "GET /api/v3/market/index-components?symbol=AAPLUSDT",
+  "request": {
+    "path": "/index-components",
+    "query": {
+      "symbol": "AAPLUSDT"
+    }
+  },
+  "httpStatus": 200,
+  "latencyMs": 135,
+  "response": {
+    "code": "00000",
+    "msg": "success",
+    "requestTime": 1789300213019,
+    "data": {
+      "symbol": "AAPLUSDT",
+      "componentList": [
+        {
+          "exchange": "BINANCE_INDEX",
+          "spotPair": "AAPL/USDT",
+          "equivalentPrice": "331.15",
+          "weight": "0.3333"
+        },
+        {
+          "exchange": "HYPERLIQUID",
+          "spotPair": "AAPL/USD",
+          "equivalentPrice": "331.03",
+          "weight": "0.3333"
+        },
+        {
+          "exchange": "PYTH_PRO",
+          "spotPair": "AAPL/USD",
+          "equivalentPrice": "332.66",
+          "weight": "0.3333"
+        }
+      ]
+    }
+  },
+  "truncated": null
+}

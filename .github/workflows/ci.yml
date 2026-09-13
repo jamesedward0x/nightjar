@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    name: lint / typecheck / test / build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Secret leak guard
+        run: |
+          if git grep -nIE "(BITGET_QWEN_API_KEY[[:space:]]*=[[:space:]]*[A-Za-z0-9_-]{12,})|(sk-[A-Za-z0-9]{20,})" -- . ':!*.lock' ':!pnpm-lock.yaml'; then
+            echo "::error::possible secret committed"; exit 1
+          fi
+          echo "no secrets found"
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test (offline)
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

@@ -1,0 +1,268 @@
+{
+  "fixtureVersion": 1,
+  "name": "discount-rate",
+  "recordedAt": "2026-09-13T11:50:07.005Z",
+  "endpoint": "GET /api/v3/market/discount-rate",
+  "request": {
+    "path": "/discount-rate",
+    "query": {}
+  },
+  "httpStatus": 200,
+  "latencyMs": 134,
+  "response": {
+    "code": "00000",
+    "msg": "success",
+    "requestTime": 1789300215439,
+    "data": [
+      {
+        "coin": "rSPY",
+        "list": [
+          {
+            "tierStartValue": "0",
+            "discountRate": "0.95"
+          },
+          {
+            "tierStartValue": "500000",
+            "discountRate": "0.94"
+          },
+          {
+            "tierStartValue": "1000000",
+            "discountRate": "0.93"
+          },
+          {
+            "tierStartValue": "2000000",
+            "discountRate": "0.92"
+          },
+          {
+            "tierStartValue": "3000000",
+            "discountRate": "0.91"
+          },
+          {
+            "tierStartValue": "4000000",
+            "discountRate": "0.9"
+          },
+          {
+            "tierStartValue": "5000000",
+            "discountRate": "0.85"
+          },
+          {
+            "tierStartValue": "10000000",
+            "discountRate": "0.8"
+          },
+          {
+            "tierStartValue": "20000000",
+            "discountRate": "0.75"
+          },
+          {
+            "tierStartValue": "30000000",
+            "discountRate": "0.7"
+          },
+          {
+            "tierStartValue": "50000000",
+            "discountRate": "0"
+          }
+        ]
+      },
+      {
+        "coin": "rMSFT",
+        "list": [
+          {
+            "tierStartValue": "0",
+            "discountRate": "0.95"
+          },
+          {
+            "tierStartValue": "500000",
+            "discountRate": "0.94"
+          },
+          {
+            "tierStartValue": "1000000",
+            "discountRate": "0.93"
+          },
+          {
+            "tierStartValue": "2000000",
+            "discountRate": "0.92"
+          },
+          {
+            "tierStartValue": "3000000",
+            "discountRate": "0.91"
+          },
+          {
+            "tierStartValue": "4000000",
+            "discountRate": "0.9"
+          },
+          {
+            "tierStartValue": "5000000",
+            "discountRate": "0.85"
+          },
+          {
+            "tierStartValue": "10000000",
+            "discountRate": "0.8"
+          },
+          {
+            "tierStartValue": "20000000",
+            "discountRate": "0.75"
+          },
+          {
+            "tierStartValue": "30000000",
+            "discountRate": "0.7"
+          },
+          {
+            "tierStartValue": "50000000",
+            "discountRate": "0"
+          }
+        ]
+      },
+      {
+        "coin": "rINTC",
+        "list": [
+          {
+            "tierStartValue": "0",
+            "discountRate": "0.95"
+          },
+          {
+            "tierStartValue": "500000",
+            "discountRate": "0.94"
+          },
+          {
+            "tierStartValue": "1000000",
+            "discountRate": "0.93"
+          },
+          {
+            "tierStartValue": "2000000",
+            "discountRate": "0.92"
+          },
+          {
+            "tierStartValue": "3000000",
+            "discountRate": "0.91"
+          },
+          {
+            "tierStartValue": "4000000",
+            "discountRate": "0.9"
+          },
+          {
+            "tierStartValue": "5000000",
+            "discountRate": "0.85"
+          },
+          {
+            "tierStartValue": "10000000",
+            "discountRate": "0.8"
+          },
+          {
+            "tierStartValue": "20000000",
+            "discountRate": "0.75"
+          },
+          {
+            "tierStartValue": "30000000",
+            "discountRate": "0.7"
+          },
+          {
+            "tierStartValue": "50000000",
+            "discountRate": "0"
+          }
+        ]
+      },
+      {
+        "coin": "rMETA",
+        "list": [
+          {
+            "tierStartValue": "0",
+            "discountRate": "0.95"
+          },
+          {
+            "tierStartValue": "500000",
+            "discountRate": "0.94"
+          },
+          {
+            "tierStartValue": "1000000",
+            "discountRate": "0.93"
+          },
+          {
+            "tierStartValue": "2000000",
+            "discountRate": "0.92"
+          },
+          {
+            "tierStartValue": "3000000",
+            "discountRate": "0.91"
+          },
+          {
+            "tierStartValue": "4000000",
+            "discountRate": "0.9"
+          },
+          {
+            "tierStartValue": "5000000",
+            "discountRate": "0.85"
+          },
+          {
+            "tierStartValue": "10000000",
+            "discountRate": "0.8"
+          },
+          {
+            "tierStartValue": "20000000",
+            "discountRate": "0.75"
+          },
+          {
+            "tierStartValue": "30000000",
+            "discountRate": "0.7"
+          },
+          {
+            "tierStartValue": "50000000",
+            "discountRate": "0"
+          }
+        ]
+      },
+      {
+        "coin": "rAMZN",
+        "list": [
+          {
+            "tierStartValue": "0",
+            "discountRate": "0.95"
+          },
+          {
+            "tierStartValue": "500000",
+            "discountRate": "0.94"
+          },
+          {
+            "tierStartValue": "1000000",
+            "discountRate": "0.93"
+          },
+          {
+            "tierStartValue": "2000000",
+            "discountRate": "0.92"
+          },
+          {
+            "tierStartValue": "3000000",
+            "discountRate": "0.91"
+          },
+          {
+            "tierStartValue": "4000000",
+            "discountRate": "0.9"
+          },
+          {
+            "tierStartValue": "5000000",
+            "discountRate": "0.85"
+          },
+          {
+            "tierStartValue": "10000000",
+            "discountRate": "0.8"
+          },
+          {
+            "tierStartValue": "20000000",
+            "discountRate": "0.75"
+          },
+          {
+            "tierStartValue": "30000000",
+            "discountRate": "0.7"
+          },
+          {
+            "tierStartValue": "50000000",
+            "discountRate": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "truncated": {
+    "originalLength": 503,
+    "keptLength": 5
+  }
+}
